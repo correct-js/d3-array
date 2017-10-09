@@ -1,3 +1,4 @@
+/*
 export {default as bisect, bisectRight, bisectLeft} from "./src/bisect";
 export {ascending} from "./src/ascending";
 export {bisector} from "./src/bisector";
@@ -25,3 +26,6 @@ export {ticks, tickIncrement, tickStep} from "./src/ticks";
 export {transpose} from "./src/transpose";
 export {variance} from "./src/variance";
 export {zip} from "./src/zip";
+*/
+
+export 'package:d3_array/src/ascending.dart';

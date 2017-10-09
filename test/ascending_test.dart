@@ -1,3 +1,4 @@
+/*
 var tape = require("tape"),
     arrays = require("../");
 
@@ -32,3 +33,24 @@ tape("ascending(a, b) returns NaN if a and b are not comparable", function(test)
   test.isNaN(arrays.ascending(NaN, NaN));
   test.end();
 });
+*/
+
+import 'package:d3_array/d3_array.dart' as arrays;
+import 'package:test/test.dart';
+
+main() {
+  test("ascending(a, b) returns a negative number if a < b", () {
+    expect(arrays.ascending(0, 1) < 0, true);
+    expect(arrays.ascending("a", "b") < 0, true);
+  });
+
+  test("ascending(a, b) returns a positive number if a > b", () {
+    expect(arrays.ascending(1, 0) > 0, true);
+    expect(arrays.ascending("b", "a") > 0, true);
+  });
+
+  test("ascending(a, b) returns zero if a >= b and a <= b", () {
+    expect(arrays.ascending(0, 0), 0);
+    expect(arrays.ascending("a", "a"), 0);
+  });
+}
