@@ -1,3 +1,4 @@
+/*
 var tape = require("tape"),
     arrays = require("../");
 
@@ -321,4 +322,306 @@ function unbox(box) {
 
 function ascendingBox(a, b) {
   return arrays.ascending(a.value, b.value);
+}
+*/
+
+import 'package:test/test.dart';
+import 'package:d3_array/d3_array.dart' as arrays;
+
+main() {
+test("bisector(comparator).left(array, value) returns the index of an exact match", () {
+  var boxes = [1, 2, 3].map(box),
+      bisectLeft = arrays.bisector(ascendingBox)['left'];
+  expect(bisectLeft(boxes, box(1)), 0);
+  expect(bisectLeft(boxes, box(2)), 1);
+  expect(bisectLeft(boxes, box(3)), 2);
+});
+
+test("bisector(comparator).left(array, value) returns the index of the first match", () {
+  var boxes = [1, 2, 2, 3].map(box),
+      bisectLeft = arrays.bisector(ascendingBox)['left'];
+  expect(bisectLeft(boxes, box(1)), 0);
+  expect(bisectLeft(boxes, box(2)), 1);
+  expect(bisectLeft(boxes, box(3)), 3);
+});
+
+test("bisector(comparator).left(array, value) returns the insertion point of a non-exact match", () {
+  var boxes = [1, 2, 3].map(box),
+      bisectLeft = arrays.bisector(ascendingBox)['left'];
+  expect(bisectLeft(boxes, box(0.5)), 0);
+  expect(bisectLeft(boxes, box(1.5)), 1);
+  expect(bisectLeft(boxes, box(2.5)), 2);
+  expect(bisectLeft(boxes, box(3.5)), 3);
+});
+
+//test("bisector(comparator).left(array, value) has undefined behavior if the search value is unorderable", () {
+//  var boxes = [1, 2, 3].map(box),
+//      bisectLeft = arrays.bisector(ascendingBox)['left'];
+//  bisectLeft(boxes, box(new DateTime(double.NAN))); // who knows what this will return!
+//  bisectLeft(boxes, box(null));
+//  bisectLeft(boxes, box(double.NAN));
+//});
+
+test("bisector(comparator).left(array, value, lo) observes the specified lower bound", () {
+  var boxes = [1, 2, 3, 4, 5].map(box),
+      bisectLeft = arrays.bisector(ascendingBox)['left'];
+  expect(bisectLeft(boxes, box(0), 2), 2);
+  expect(bisectLeft(boxes, box(1), 2), 2);
+  expect(bisectLeft(boxes, box(2), 2), 2);
+  expect(bisectLeft(boxes, box(3), 2), 2);
+  expect(bisectLeft(boxes, box(4), 2), 3);
+  expect(bisectLeft(boxes, box(5), 2), 4);
+  expect(bisectLeft(boxes, box(6), 2), 5);
+});
+
+test("bisector(comparator).left(array, value, lo, hi) observes the specified bounds", () {
+  var boxes = [1, 2, 3, 4, 5].map(box),
+      bisectLeft = arrays.bisector(ascendingBox)['left'];
+  expect(bisectLeft(boxes, box(0), 2, 3), 2);
+  expect(bisectLeft(boxes, box(1), 2, 3), 2);
+  expect(bisectLeft(boxes, box(2), 2, 3), 2);
+  expect(bisectLeft(boxes, box(3), 2, 3), 2);
+  expect(bisectLeft(boxes, box(4), 2, 3), 3);
+  expect(bisectLeft(boxes, box(5), 2, 3), 3);
+  expect(bisectLeft(boxes, box(6), 2, 3), 3);
+});
+
+test("bisector(comparator).left(array, value) handles large sparse arrays", () {
+  var boxes = new List.filled((1 << 30) + 7, 0),
+      bisectLeft = arrays.bisector(ascendingBox)['left'],
+      i = 1 << 30;
+  boxes[i++] = box(1);
+  boxes[i++] = box(2);
+  boxes[i++] = box(3);
+  boxes[i++] = box(4);
+  boxes[i++] = box(5);
+  expect(bisectLeft(boxes, box(0), i - 5, i), i - 5);
+  expect(bisectLeft(boxes, box(1), i - 5, i), i - 5);
+  expect(bisectLeft(boxes, box(2), i - 5, i), i - 4);
+  expect(bisectLeft(boxes, box(3), i - 5, i), i - 3);
+  expect(bisectLeft(boxes, box(4), i - 5, i), i - 2);
+  expect(bisectLeft(boxes, box(5), i - 5, i), i - 1);
+  expect(bisectLeft(boxes, box(6), i - 5, i), i - 0);
+});
+
+test("bisector(comparator).right(array, value) returns the index after an exact match", () {
+  var boxes = [1, 2, 3].map(box),
+      bisectRight = arrays.bisector(ascendingBox)['right'];
+  expect(bisectRight(boxes, box(1)), 1);
+  expect(bisectRight(boxes, box(2)), 2);
+  expect(bisectRight(boxes, box(3)), 3);
+});
+
+test("bisector(comparator).right(array, value) returns the index after the last match", () {
+  var boxes = [1, 2, 2, 3].map(box),
+      bisectRight = arrays.bisector(ascendingBox)['right'];
+  expect(bisectRight(boxes, box(1)), 1);
+  expect(bisectRight(boxes, box(2)), 3);
+  expect(bisectRight(boxes, box(3)), 4);
+});
+
+test("bisector(comparator).right(array, value) returns the insertion point of a non-exact match", () {
+  var boxes = [1, 2, 3].map(box),
+      bisectRight = arrays.bisector(ascendingBox)['right'];
+  expect(bisectRight(boxes, box(0.5)), 0);
+  expect(bisectRight(boxes, box(1.5)), 1);
+  expect(bisectRight(boxes, box(2.5)), 2);
+  expect(bisectRight(boxes, box(3.5)), 3);
+});
+
+test("bisector(comparator).right(array, value, lo) observes the specified lower bound", () {
+  var boxes = [1, 2, 3, 4, 5].map(box),
+      bisectRight = arrays.bisector(ascendingBox)['right'];
+  expect(bisectRight(boxes, box(0), 2), 2);
+  expect(bisectRight(boxes, box(1), 2), 2);
+  expect(bisectRight(boxes, box(2), 2), 2);
+  expect(bisectRight(boxes, box(3), 2), 3);
+  expect(bisectRight(boxes, box(4), 2), 4);
+  expect(bisectRight(boxes, box(5), 2), 5);
+  expect(bisectRight(boxes, box(6), 2), 5);
+});
+
+test("bisector(comparator).right(array, value, lo, hi) observes the specified bounds", () {
+  var boxes = [1, 2, 3, 4, 5].map(box),
+      bisectRight = arrays.bisector(ascendingBox)['right'];
+  expect(bisectRight(boxes, box(0), 2, 3), 2);
+  expect(bisectRight(boxes, box(1), 2, 3), 2);
+  expect(bisectRight(boxes, box(2), 2, 3), 2);
+  expect(bisectRight(boxes, box(3), 2, 3), 3);
+  expect(bisectRight(boxes, box(4), 2, 3), 3);
+  expect(bisectRight(boxes, box(5), 2, 3), 3);
+  expect(bisectRight(boxes, box(6), 2, 3), 3);
+});
+
+test("bisector(comparator).right(array, value) handles large sparse arrays", () {
+  var boxes = new List.filled((1 << 30) + 7, 0),
+      bisectRight = arrays.bisector(ascendingBox)['right'],
+      i = 1 << 30;
+  boxes[i++] = box(1);
+  boxes[i++] = box(2);
+  boxes[i++] = box(3);
+  boxes[i++] = box(4);
+  boxes[i++] = box(5);
+  expect(bisectRight(boxes, box(0), i - 5, i), i - 5);
+  expect(bisectRight(boxes, box(1), i - 5, i), i - 4);
+  expect(bisectRight(boxes, box(2), i - 5, i), i - 3);
+  expect(bisectRight(boxes, box(3), i - 5, i), i - 2);
+  expect(bisectRight(boxes, box(4), i - 5, i), i - 1);
+  expect(bisectRight(boxes, box(5), i - 5, i), i - 0);
+  expect(bisectRight(boxes, box(6), i - 5, i), i - 0);
+});
+
+test("bisector(accessor).left(array, value) returns the index of an exact match", () {
+  var boxes = [1, 2, 3].map(box),
+      bisectLeft = arrays.bisector(unbox)['left'];
+  expect(bisectLeft(boxes, 1), 0);
+  expect(bisectLeft(boxes, 2), 1);
+  expect(bisectLeft(boxes, 3), 2);
+});
+
+test("bisector(accessor).left(array, value) returns the index of the first match", () {
+  var boxes = [1, 2, 2, 3].map(box),
+      bisectLeft = arrays.bisector(unbox)['left'];
+  expect(bisectLeft(boxes, 1), 0);
+  expect(bisectLeft(boxes, 2), 1);
+  expect(bisectLeft(boxes, 3), 3);
+});
+
+test("bisector(accessor).left(array, value) returns the insertion point of a non-exact match", () {
+  var boxes = [1, 2, 3].map(box),
+      bisectLeft = arrays.bisector(unbox)['left'];
+  expect(bisectLeft(boxes, 0.5), 0);
+  expect(bisectLeft(boxes, 1.5), 1);
+  expect(bisectLeft(boxes, 2.5), 2);
+  expect(bisectLeft(boxes, 3.5), 3);
+});
+
+//test("bisector(accessor).left(array, value) has undefined behavior if the search value is unorderable", () {
+//  var boxes = [1, 2, 3].map(box),
+//      bisectLeft = arrays.bisector(unbox)['left'];
+//  bisectLeft(boxes, new Date(NaN)); // who knows what this will return!
+//  bisectLeft(boxes, undefined);
+//  bisectLeft(boxes, NaN);
+//});
+
+test("bisector(accessor).left(array, value, lo) observes the specified lower bound", () {
+  var boxes = [1, 2, 3, 4, 5].map(box),
+      bisectLeft = arrays.bisector(unbox)['left'];
+  expect(bisectLeft(boxes, 0, 2), 2);
+  expect(bisectLeft(boxes, 1, 2), 2);
+  expect(bisectLeft(boxes, 2, 2), 2);
+  expect(bisectLeft(boxes, 3, 2), 2);
+  expect(bisectLeft(boxes, 4, 2), 3);
+  expect(bisectLeft(boxes, 5, 2), 4);
+  expect(bisectLeft(boxes, 6, 2), 5);
+});
+
+test("bisector(accessor).left(array, value, lo, hi) observes the specified bounds", () {
+  var boxes = [1, 2, 3, 4, 5].map(box),
+      bisectLeft = arrays.bisector(unbox)['left'];
+  expect(bisectLeft(boxes, 0, 2, 3), 2);
+  expect(bisectLeft(boxes, 1, 2, 3), 2);
+  expect(bisectLeft(boxes, 2, 2, 3), 2);
+  expect(bisectLeft(boxes, 3, 2, 3), 2);
+  expect(bisectLeft(boxes, 4, 2, 3), 3);
+  expect(bisectLeft(boxes, 5, 2, 3), 3);
+  expect(bisectLeft(boxes, 6, 2, 3), 3);
+});
+
+test("bisector(accessor).left(array, value) handles large sparse arrays", () {
+  var boxes = new List.filled((1 << 30) + 7, 0),
+      bisectLeft = arrays.bisector(unbox)['left'],
+      i = 1 << 30;
+  boxes[i++] = box(1);
+  boxes[i++] = box(2);
+  boxes[i++] = box(3);
+  boxes[i++] = box(4);
+  boxes[i++] = box(5);
+  expect(bisectLeft(boxes, 0, i - 5, i), i - 5);
+  expect(bisectLeft(boxes, 1, i - 5, i), i - 5);
+  expect(bisectLeft(boxes, 2, i - 5, i), i - 4);
+  expect(bisectLeft(boxes, 3, i - 5, i), i - 3);
+  expect(bisectLeft(boxes, 4, i - 5, i), i - 2);
+  expect(bisectLeft(boxes, 5, i - 5, i), i - 1);
+  expect(bisectLeft(boxes, 6, i - 5, i), i - 0);
+});
+
+test("bisector(accessor).right(array, value) returns the index after an exact match", () {
+  var boxes = [1, 2, 3].map(box),
+      bisectRight = arrays.bisector(unbox)['right'];
+  expect(bisectRight(boxes, 1), 1);
+  expect(bisectRight(boxes, 2), 2);
+  expect(bisectRight(boxes, 3), 3);
+});
+
+test("bisector(accessor).right(array, value) returns the index after the last match", () {
+  var boxes = [1, 2, 2, 3].map(box),
+      bisectRight = arrays.bisector(unbox)['right'];
+  expect(bisectRight(boxes, 1), 1);
+  expect(bisectRight(boxes, 2), 3);
+  expect(bisectRight(boxes, 3), 4);
+});
+
+test("bisector(accessor).right(array, value) returns the insertion point of a non-exact match", () {
+  var boxes = [1, 2, 3].map(box),
+      bisectRight = arrays.bisector(unbox)['right'];
+  expect(bisectRight(boxes, 0.5), 0);
+  expect(bisectRight(boxes, 1.5), 1);
+  expect(bisectRight(boxes, 2.5), 2);
+  expect(bisectRight(boxes, 3.5), 3);
+});
+
+test("bisector(accessor).right(array, value, lo) observes the specified lower bound", () {
+  var boxes = [1, 2, 3, 4, 5].map(box),
+      bisectRight = arrays.bisector(unbox)['right'];
+  expect(bisectRight(boxes, 0, 2), 2);
+  expect(bisectRight(boxes, 1, 2), 2);
+  expect(bisectRight(boxes, 2, 2), 2);
+  expect(bisectRight(boxes, 3, 2), 3);
+  expect(bisectRight(boxes, 4, 2), 4);
+  expect(bisectRight(boxes, 5, 2), 5);
+  expect(bisectRight(boxes, 6, 2), 5);
+});
+
+test("bisector(accessor).right(array, value, lo, hi) observes the specified bounds", () {
+  var boxes = [1, 2, 3, 4, 5].map(box),
+      bisectRight = arrays.bisector(unbox)['right'];
+  expect(bisectRight(boxes, 0, 2, 3), 2);
+  expect(bisectRight(boxes, 1, 2, 3), 2);
+  expect(bisectRight(boxes, 2, 2, 3), 2);
+  expect(bisectRight(boxes, 3, 2, 3), 3);
+  expect(bisectRight(boxes, 4, 2, 3), 3);
+  expect(bisectRight(boxes, 5, 2, 3), 3);
+  expect(bisectRight(boxes, 6, 2, 3), 3);
+});
+
+test("bisector(accessor).right(array, value) handles large sparse arrays", () {
+  var boxes = [],
+      bisectRight = arrays.bisector(unbox)['right'],
+      i = 1 << 30;
+  boxes[i++] = box(1);
+  boxes[i++] = box(2);
+  boxes[i++] = box(3);
+  boxes[i++] = box(4);
+  boxes[i++] = box(5);
+  expect(bisectRight(boxes, 0, i - 5, i), i - 5);
+  expect(bisectRight(boxes, 1, i - 5, i), i - 4);
+  expect(bisectRight(boxes, 2, i - 5, i), i - 3);
+  expect(bisectRight(boxes, 3, i - 5, i), i - 2);
+  expect(bisectRight(boxes, 4, i - 5, i), i - 1);
+  expect(bisectRight(boxes, 5, i - 5, i), i - 0);
+  expect(bisectRight(boxes, 6, i - 5, i), i - 0);
+});
+}
+
+box(value) {
+  return {'value': value};
+}
+
+unbox(box, aux) {
+  return box['value'];
+}
+
+ascendingBox(a, b) {
+  return arrays.ascending(a['value'], b['value']);
 }

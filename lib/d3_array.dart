@@ -29,3 +29,4 @@ export {zip} from "./src/zip";
 */
 
 export 'package:d3_array/src/ascending.dart';
+export 'package:d3_array/src/bisector.dart';
